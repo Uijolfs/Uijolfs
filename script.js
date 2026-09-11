@@ -120,3 +120,47 @@
   }).observe(canvas);
   resize(); sync();
 })();
+
+
+// Animate native research disclosures; keep them usable without JavaScript.
+(() => {
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  document.querySelectorAll('details.research-card').forEach(card => {
+    const summary = card.querySelector('summary');
+    const content = card.querySelector('.research-card-projects');
+    let animation = null;
+    let expanded = card.open;
+    function finish() {
+      if (animation) {
+        animation.onfinish = null;
+        animation.cancel();
+        animation = null;
+      }
+      card.open = expanded;
+      card.style.height = '';
+    }
+    summary.addEventListener('click', event => {
+      event.preventDefault();
+      const startHeight = card.getBoundingClientRect().height;
+      expanded = !expanded;
+      if (animation) {
+        animation.onfinish = null;
+        animation.cancel();
+        animation = null;
+      }
+      if (reduced.matches || !card.animate) { finish(); return; }
+      card.style.height = startHeight + 'px';
+      card.open = true;
+      const computed = getComputedStyle(card);
+      const border = parseFloat(computed.borderTopWidth) + parseFloat(computed.borderBottomWidth);
+      const targetHeight = summary.offsetHeight + (expanded ? content.offsetHeight : 0) + border;
+      animation = card.animate(
+        { height: [startHeight + 'px', targetHeight + 'px'] },
+        { duration: 320, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'forwards' }
+      );
+      animation.onfinish = finish;
+    });
+    window.addEventListener('resize', finish, { passive: true });
+    reduced.addEventListener('change', finish);
+  });
+})();
