@@ -187,7 +187,7 @@
     '.research-layout > .section-marker, .research-layout > .section-intro',
     '.research-grid > .research-card',
     '.learning-header, .learning-grid > .learning-column',
-    '.personal-section .section-marker, .personal-content',
+    '.personal-section .section-marker, .personal-content, .personal-album',
     'footer.page-width'
   ];
   const records = new Map();
