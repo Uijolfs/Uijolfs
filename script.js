@@ -3,18 +3,23 @@
   const header = document.querySelector('.site-header');
   const links = [...document.querySelectorAll('nav a')];
   const sections = links.map(link => document.getElementById(link.hash.slice(1)));
-  let frame = 0;
+  let frame = 0, previousHeight = 0, previousActive = null;
   function update() {
     frame = 0;
     const height = header?.offsetHeight || 90;
-    document.documentElement.style.setProperty('--header-height', height + 'px');
-    header?.classList.toggle('is-scrolled', window.scrollY > 12);
     const readingLine = height + Math.min(window.innerHeight * .2, 160);
     let active = -1;
     sections.forEach((section, index) => {
       if (section && section.getBoundingClientRect().top <= readingLine) active = index;
     });
     if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) active = links.length - 1;
+    if (height !== previousHeight) {
+      document.documentElement.style.setProperty('--header-height', height + 'px');
+      previousHeight = height;
+    }
+    header?.classList.toggle('is-scrolled', window.scrollY > 12);
+    if (active === previousActive) return;
+    previousActive = active;
     links.forEach((link, index) => {
       const selected = index === active;
       link.classList.toggle('active', selected);
@@ -279,7 +284,8 @@
   let position = 0, velocity = 0, targetPosition = 0;
   let origin = 0, destination = null, budget = 0;
   let mode = 'idle', preview = null;
-  let lastInput = -Infinity, locked = false, lockedUntil = 0;
+  let lastInput = -Infinity, lastMagnitude = 0, lastDirection = 0, locked = false;
+  let pageStops = [], limit = 0;
 
   function enabled() { return desktop.matches && !reduced.matches; }
   function clearPreview() {
@@ -291,7 +297,7 @@
     clearTimeout(releaseTimer);
     frame = 0; releaseTimer = 0; lastFrame = 0;
     velocity = 0; budget = 0; mode = 'idle'; destination = null;
-    locked = false; lockedUntil = 0;
+    locked = false; lastInput = -Infinity; lastMagnitude = 0; lastDirection = 0;
     clearPreview();
     root.classList.remove('is-page-scrolling');
   }
@@ -313,15 +319,16 @@
     );
   }
   function nextStop(direction) {
-    const points = stops();
+    const points = pageStops;
     return direction > 0
       ? points.find(point => point.position > origin + 2)
-      : points.reverse().find(point => point.position < origin - 2);
+      : [...points].reverse().find(point => point.position < origin - 2);
   }
   function canScrollInside(element, direction) {
     for (; element && element !== document.body && element !== root; element = element.parentElement) {
+      if (element.scrollHeight <= element.clientHeight + 2) continue;
       const style = getComputedStyle(element);
-      if (!/(auto|scroll)/.test(style.overflowY) || element.scrollHeight <= element.clientHeight + 2) continue;
+      if (!/(auto|scroll)/.test(style.overflowY)) continue;
       if (direction > 0 && element.scrollTop < element.scrollHeight - element.clientHeight - 2) return true;
       if (direction < 0 && element.scrollTop > 2) return true;
     }
@@ -334,13 +341,24 @@
   }
   function tick(time) {
     frame = 0;
-    const dt = Math.min(.032, Math.max(.001, (time - lastFrame) / 1000));
+    const dt = Math.min(.064, Math.max(.001, (time - lastFrame) / 1000));
     lastFrame = time;
-    const stiffness = mode === 'preview' ? 240 : mode === 'return' ? 190 : 150;
-    const damping = mode === 'preview' ? 30 : mode === 'return' ? 20 : 24;
-    velocity += ((targetPosition - position) * stiffness - velocity * damping) * dt;
-    const next = position + velocity * dt;
-    position = Math.max(0, Math.min(maximum(), next));
+    let next;
+    if (mode === 'preview') {
+      // Follow input within a frame; resistance belongs in the displacement curve,
+      // not in a second slow spring between the gesture and its visible response.
+      next = position + (targetPosition - position) * (1 - Math.exp(-dt / .018));
+      velocity = Math.max(-1800, Math.min(1800, (next - position) / dt));
+    } else {
+      // Exact critically damped spring, independent of 60/120 Hz frame timing.
+      const omega = mode === 'return' ? 18 : 15;
+      const displacement = position - targetPosition;
+      const momentum = velocity + omega * displacement;
+      const decay = Math.exp(-omega * dt);
+      next = targetPosition + (displacement + momentum * dt) * decay;
+      velocity = (velocity - omega * momentum * dt) * decay;
+    }
+    position = Math.max(0, Math.min(limit, next));
     if (position !== next) velocity = 0;
     window.scrollTo(0, position);
     const settled = Math.abs(targetPosition - position) < .4 && Math.abs(velocity) < 5;
@@ -349,7 +367,6 @@
       velocity = 0;
       window.scrollTo(0, position);
       if (mode !== 'preview') {
-        if (mode === 'commit') lockedUntil = performance.now() + 120;
         clearPreview();
         mode = 'idle'; budget = 0; destination = null;
         root.classList.remove('is-page-scrolling');
@@ -365,7 +382,7 @@
     targetPosition = origin;
     ensureFrame();
   }
-  function pull(delta, now) {
+  function pull(delta) {
     clearTimeout(releaseTimer);
     budget += Math.max(-100, Math.min(100, delta));
     const direction = Math.sign(budget);
@@ -384,14 +401,14 @@
     if (Math.abs(budget) >= threshold) {
       mode = 'commit';
       targetPosition = destination.position;
-      locked = true; lockedUntil = now + 700;
+      locked = true;
       clearPreview();
     } else {
       mode = 'preview';
       const span = destination.position - origin;
       // Resistance rises with displacement; a light gesture still exposes the next page.
       targetPosition = origin + span * .38 * (1 - Math.exp(-Math.abs(budget) / 190));
-      releaseTimer = setTimeout(returnToOrigin, 190);
+      releaseTimer = setTimeout(returnToOrigin, 280);
     }
     ensureFrame();
   }
@@ -403,22 +420,29 @@
     if (element.closest('input, textarea, select, [contenteditable], [role="dialog"]')) return;
     const now = performance.now();
     const idle = now - lastInput;
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
+    const magnitude = Math.abs(delta);
+    const direction = Math.sign(delta);
+    const freshGesture = idle >= 120 || direction !== lastDirection ||
+      (magnitude >= 12 && magnitude > lastMagnitude * 2 + 4);
     lastInput = now;
-    if (mode === 'commit' || (locked && (now < lockedUntil || idle < 220))) {
+    lastMagnitude = magnitude; lastDirection = direction;
+    if (mode === 'commit' || (locked && !freshGesture)) {
       event.preventDefault();
       return;
     }
     locked = false;
-    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
     if (mode === 'idle') {
       if (canScrollInside(element, Math.sign(delta))) return;
       origin = window.scrollY;
+      pageStops = stops();
+      limit = maximum();
       if (!nextStop(Math.sign(delta))) return;
       position = origin; targetPosition = origin; velocity = 0; budget = 0;
     }
     event.preventDefault();
     root.classList.add('wheel-paging', 'is-page-scrolling');
-    pull(delta, now);
+    pull(delta);
   }, { passive: false });
   window.addEventListener('resize', configure, { passive: true });
   window.addEventListener('keydown', cancel);
