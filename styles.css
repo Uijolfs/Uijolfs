@@ -8,3 +8,28 @@
 @media(max-width:760px){html{scroll-padding-top:112px}.page-width{width:calc(100% - 40px)}.site-header{height:auto;min-height:88px;padding:13px 20px;display:grid;grid-template-columns:1fr auto;gap:5px 20px}.wordmark{font-size:29px}.github-link{font-size:13px;grid-column:2;grid-row:1}nav{grid-column:1/-1;grid-row:2;gap:25px;font-size:13px}nav a{padding:5px 0}nav a::after{bottom:0}.hero{padding-top:30px}.hero-coordinate{display:none}.hero-content{grid-template-columns:1fr;gap:30px;padding-top:32px;padding-bottom:20px}.hero-name h1{font-size:clamp(3.6rem,13.2vw,5.5rem);white-space:normal}.education{font-size:14px;margin-top:21px}.hero-intro{padding:0;max-width:100%}.hero-statement{font-size:27px}.hero-description{max-width:100%;font-size:16px;margin-top:16px}.text-link{margin-top:18px}.signal-surface{height:185px;margin-top:13px}.signal-label{font-size:10px;letter-spacing:0}.motion-button{font-size:11px;padding:6px 8px}.signal-mark{margin-right:3px}.hero-bottom{padding-block:18px 24px;gap:14px}.hero-bottom>.mono{font-size:9px;max-width:180px;line-height:1.6}.scroll-link{font-size:12px;gap:12px}.section-grid{grid-template-columns:1fr;gap:25px;padding-block:54px}.section-marker{gap:12px}.section-marker h2{font-size:14px}.section-headline{font-size:30px}.about-copy{margin-top:24px}.about-copy p{font-size:16px}.interest-strip{gap:10px 18px;margin-top:24px}.interest-strip span{font-size:11px}.section-intro>p{font-size:16px}.research-item summary{grid-template-columns:1fr 24px;gap:9px;padding-block:22px}.item-index{grid-column:1/-1;font-size:10px}.research-name{font-size:20px}.expand-sign{grid-column:2;grid-row:2}.research-detail{padding:0 12px 23px 0}.release-note{font-size:12px}.notes-grid{gap:12px;margin-top:25px}.note-card{padding:19px 16px 22px}.note-top .mono{font-size:9px;letter-spacing:0}.note-glyph{font-size:24px}.note-card h4{font-size:19px;margin-top:20px}.note-card p{font-size:14px;line-height:1.65}.personal-content{grid-template-columns:1fr;gap:36px}.journey{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-left:20px}.journey-connector{display:none}.journey strong{font-size:25px}.journey span:last-child{font-size:12px}.journey .mono{font-size:10px}.personal-content .eyebrow{font-size:10px}footer{display:grid;grid-template-columns:auto 1fr;gap:14px;padding-block:28px}footer p{font-size:12px}footer>a:last-child{grid-column:2;font-size:13px}}
 @media(max-width:380px){nav{gap:20px}.notes-grid{grid-template-columns:1fr}.note-card h4 br{display:none}.signal-label{font-size:9px}.hero-bottom>.mono{max-width:140px}.research-name{font-size:19px}.journey{grid-template-columns:1fr}.journey>div+div{margin-top:14px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}html.motion-paused{scroll-behavior:auto}html.motion-paused *,html.motion-paused *::after{transition:none!important}
+
+
+/* Personal identity and philosophy-led introduction. */
+.wordmark { font-size: 28px; font-weight: 600; letter-spacing: -1px; }
+.hero { padding-top: 0; }
+.hero-content { grid-template-columns: 1.15fr 1fr; align-items: start; gap: 64px; padding-top: 76px; padding-bottom: 40px; }
+.hero-heading { min-width: 0; }
+.hero-heading h1 { margin: 0; font-size: clamp(2.5rem, 4.6vw, 4.6rem); font-weight: 450; letter-spacing: -.05em; line-height: 1.13; }
+.hero-heading h1 em { font-family: Georgia, "Times New Roman", serif; font-weight: 400; color: var(--accent); }
+.hero-intro { max-width: 490px; padding-top: 0; }
+.hero-intro .hero-description { max-width: none; margin-top: 0; }
+.hero-intro .hero-description + .hero-description { margin-top: 20px; }
+.hero-bottom { justify-content: flex-end; }
+.personal-content { grid-template-columns: 1fr; }
+.personal-content > div { max-width: 650px; }
+footer .wordmark { font-size: 24px; }
+@media (max-width: 1100px) {
+  .hero-content { gap: 36px; }
+}
+@media (max-width: 760px) {
+  .hero-content { grid-template-columns: 1fr; padding-top: 42px; padding-bottom: 25px; gap: 26px; }
+  .hero-heading h1 { font-size: clamp(2.4rem, 8.7vw, 3.5rem); }
+  .hero-intro { max-width: 100%; }
+  .wordmark { font-size: 25px; }
+}
