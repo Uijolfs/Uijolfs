@@ -273,3 +273,11 @@ footer.page-width { min-height: 160px; scroll-snap-align: none; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; scroll-snap-type: none; }
 }
+
+/* The neighboring page is a blurred preview until the spring is released. */
+main > section, footer.page-width { transition: filter .32s ease; }
+main > section.spring-preview, footer.spring-preview { filter: blur(5px) brightness(.8); }
+@media (prefers-reduced-motion: reduce) {
+  main > section, footer.page-width { transition: none; }
+  main > section.spring-preview, footer.spring-preview { filter: none; }
+}
