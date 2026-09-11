@@ -153,3 +153,39 @@
     });
   });
 })();
+
+
+// Reveal Learning once, on its first entry into the viewport.
+(() => {
+  const section = document.getElementById('notes');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (!section || reduced.matches || !('IntersectionObserver' in window)) return;
+  const columns = [...section.querySelectorAll('.learning-column')];
+  if (!columns.length || !columns.every(column => typeof column.animate === 'function')) return;
+  let played = false;
+  const animations = [];
+  const observer = new IntersectionObserver(entries => {
+    if (played || !entries.some(entry => entry.isIntersecting)) return;
+    played = true;
+    observer.disconnect();
+    if (reduced.matches) return;
+    columns.forEach((column, index) => {
+      animations.push(column.animate(
+        [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 560, delay: index * 90, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' }
+      ));
+    });
+  }, { threshold: .08, rootMargin: '0px 0px -8% 0px' });
+  const cancel = () => {
+    if (!reduced.matches) return;
+    observer.disconnect();
+    animations.forEach(animation => animation.cancel());
+  };
+  reduced.addEventListener('change', cancel);
+  section.addEventListener('focusin', () => {
+    played = true;
+    observer.disconnect();
+    animations.forEach(animation => animation.cancel());
+  });
+  observer.observe(section);
+})();

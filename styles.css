@@ -144,3 +144,27 @@ footer .wordmark { font-size: 24px; }
   .research-card, .research-art, .research-open-icon, .research-card.is-ready .research-front, .research-card.is-ready .research-back { transition: none; transform: none; }
   .research-card:not(.is-active):hover .research-art, .research-card:not(.is-active):hover .research-open-icon { transform: none; }
 }
+
+/* Learning collections: three simple text columns. */
+.learning-section { padding-block: 88px; }
+.learning-header { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+.learning-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin-top: 40px; }
+.learning-column { display: flex; flex-direction: column; min-width: 0; padding: 24px 0 8px; border-top: 1px solid var(--line); }
+.learning-number { font-family: var(--mono); font-size: .875rem; color: var(--accent); }
+.learning-column h4 { margin: 18px 0 22px; font-size: clamp(1.5rem, 2.4vw, 1.9rem); font-weight: 450; line-height: 1.25; letter-spacing: -.03em; }
+.learning-column ul { padding: 0; margin: 0 0 30px; list-style: none; color: var(--muted); font-size: 1rem; line-height: 1.75; }
+.learning-column li + li { margin-top: 6px; }
+.learning-repository { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: auto; font-family: var(--mono); font-size: .875rem; color: var(--muted); }
+.learning-repository span { color: var(--accent); }
+.learning-column:hover, .learning-column:focus-visible { border-top-color: var(--accent); }
+.learning-column:hover .learning-repository, .learning-column:focus-visible .learning-repository { color: var(--text); text-decoration: underline; text-underline-offset: 5px; }
+@media (max-width: 1100px) {
+  .learning-header { grid-template-columns: 165px minmax(0, 1fr); gap: 30px; }
+  .learning-grid { gap: 24px; }
+}
+@media (max-width: 760px) {
+  .learning-section { padding-block: 54px; }
+  .learning-header { grid-template-columns: 1fr; gap: 25px; }
+  .learning-grid { grid-template-columns: 1fr; gap: 30px; margin-top: 30px; }
+  .learning-column h4 br { display: none; }
+}
