@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c0e12">
+  <meta name="description" content="Xian Chen — an undergraduate in Electrical & Computer Engineering and Physics at WPI. Research, computational experiments, and notes on living systems.">
+  <title>Xian Chen · Physics, computation & living systems</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <a class="wordmark" href="#home" aria-label="Xian Chen, home">xc<span class="wordmark-dot">.</span></a>
+    <nav aria-label="Main navigation">
+      <a href="#about">About</a><a href="#research">Research</a><a href="#notes">Notes</a><a href="#personal">Personal</a>
+    </nav>
+    <a class="github-link" href="https://github.com/Uijolfs" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="hero-top page-width">
+        <p class="eyebrow"><span class="accent-line" aria-hidden="true"></span> A PERSONAL FIELD NOTE</p>
+        <span class="hero-coordinate mono">WORCESTER, MA</span>
+      </div>
+      <div class="hero-content page-width">
+        <div class="hero-name"><h1 id="hero-title">Xian Chen<span>.</span></h1><p class="education">Electrical &amp; Computer Engineering + Physics<br><strong>Worcester Polytechnic Institute</strong></p></div>
+        <div class="hero-intro"><p class="hero-statement">Physics, computation,<br>and <em>living systems.</em></p><p class="hero-description">I explore physiological questions through mathematical models and computational experiments.</p><a class="text-link" href="#research">Explore my work <span aria-hidden="true">↘</span></a></div>
+      </div>
+      <div class="signal-surface" aria-label="Decorative animated synthetic ECG waveform">
+        <canvas id="ecg" aria-hidden="true"></canvas>
+        <div class="signal-meta page-width"><span class="mono signal-label"><span class="signal-mark" aria-hidden="true">∿</span> ECG / ILLUSTRATIVE SIGNAL</span><button id="motion-toggle" class="motion-button" type="button" aria-pressed="false" aria-label="Pause animations"><span id="motion-symbol" aria-hidden="true">Ⅱ</span><span id="motion-label">Pause motion</span></button></div>
+      </div>
+      <div class="hero-bottom page-width"><span class="mono">MATHEMATICAL MODELS. PHYSIOLOGICAL QUESTIONS.</span><a class="scroll-link" href="#about">A little about me <span aria-hidden="true">↓</span></a></div>
+    </section>
+
+    <section class="about-section page-width section-grid" id="about" aria-labelledby="about-title">
+      <div class="section-marker"><span class="section-number">01</span><h2>About</h2></div>
+      <div class="section-body"><h3 class="section-headline" id="about-title">From physical intuition<br>to physiological questions.</h3><div class="about-copy"><p>I'm an undergraduate studying electrical and computer engineering and physics at WPI. My research interests center on computational cardiac electrophysiology, ECG-based localization, and digital twins.</p><p>Physics gives me a way to understand a system. Physiology gives me meaningful questions to work on. I'm interested in bringing the two together through models that are useful beyond the simulation.</p></div><div class="interest-strip"><span>Cardiac electrophysiology</span><span>Inverse problems</span><span>Nonlinear dynamics</span></div></div>
+    </section>
+
+    <section class="research-section" id="research" aria-labelledby="research-title">
+      <div class="page-width section-grid"><div class="section-marker"><span class="section-number">02</span><h2 id="research-title">Research</h2></div><div class="section-body"><div class="section-intro"><h3 class="section-headline">Questions I'm working on.</h3><p>Connecting electrical activity, mathematical models, and clinical problems.</p></div>
+        <details class="research-item"><summary><span class="item-index mono">01 / MODEL</span><span class="research-name">Cardiac modeling &amp; digital twins</span><span class="expand-sign" aria-hidden="true">+</span></summary><div class="research-detail"><p>How can a computational model capture the essential behavior of cardiac electrical propagation?</p><p>My work includes cellular automata models and simulations linking cardiac activation to ECG signals.</p></div></details>
+        <details class="research-item"><summary><span class="item-index mono">02 / LOCATE</span><span class="research-name">ECG-based localization</span><span class="expand-sign" aria-hidden="true">+</span></summary><div class="research-detail"><p>What can a small set of ECG measurements tell us about the location of an electrical source?</p><p>I study computational approaches to pace mapping, using the relationship between spatial position and ECG features.</p></div></details>
+        <details class="research-item"><summary><span class="item-index mono">03 / NAVIGATE</span><span class="research-name">Computational catheter navigation</span><span class="expand-sign" aria-hidden="true">+</span></summary><div class="research-detail"><p>How can anatomical information and electrical measurements help guide the next step?</p><p>I explore geometry-aware approaches to navigation on cardiac surfaces.</p></div></details>
+        <p class="release-note">Descriptions here are an overview. Code and publications will be linked as they become available for public release.</p>
+      </div></div>
+    </section>
+
+    <section class="notes-section page-width section-grid" id="notes" aria-labelledby="notes-title"><div class="section-marker"><span class="section-number">03</span><h2 id="notes-title">Notes &amp; experiments</h2></div><div class="section-body"><div class="section-intro"><h3 class="section-headline">Learning, in the open.</h3><p>Selected derivations, numerical experiments, and ideas from my undergraduate studies. I'm currently organizing these collections.</p></div><div class="notes-grid">
+      <article class="note-card"><div class="note-top"><span class="mono">01 / NEUROSCIENCE</span><span class="note-glyph" aria-hidden="true">Σ</span></div><h4>Computational<br>neuroscience</h4><p>Models of neural activity and questions about collective behavior.</p></article>
+      <article class="note-card"><div class="note-top"><span class="mono">02 / PHYSICS</span><span class="note-glyph" aria-hidden="true">ψ</span></div><h4>Computational<br>physics</h4><p>Physical intuition explored through numerical methods and simulations.</p></article>
+      <article class="note-card"><div class="note-top"><span class="mono">03 / DYNAMICS</span><span class="note-glyph" aria-hidden="true">∞</span></div><h4>Nonlinear dynamics<br>&amp; chaos</h4><p>Independent study notes on dynamical systems and their behavior.</p></article>
+      <article class="note-card"><div class="note-top"><span class="mono">04 / MATHEMATICS</span><span class="note-glyph" aria-hidden="true">∂</span></div><h4>Mathematical methods<br>for physics</h4><p>Derivations and mathematical tools for understanding physical systems.</p></article>
+    </div></div></section>
+
+    <section class="personal-section" id="personal" aria-labelledby="personal-title"><div class="page-width section-grid"><div class="section-marker"><span class="section-number">04</span><h2>Personal</h2></div><div class="section-body personal-content"><div><p class="eyebrow">A LITTLE MORE ABOUT ME</p><h3 class="section-headline" id="personal-title">Always a student.</h3><p>Before WPI, I spent two years studying physics at Lanzhou University. Moving between physics and engineering has shaped the way I approach new problems.</p><p>This space is also a personal notebook: a place for the questions, ideas, and small discoveries that come along with learning.</p></div><aside class="journey" aria-label="Educational journey"><div><span class="mono">WHERE I STARTED</span><strong>Lanzhou</strong><span>Physics · Lanzhou University</span></div><div class="journey-connector" aria-hidden="true"></div><div><span class="mono">WHERE I AM NOW</span><strong>Worcester</strong><span>ECE + Physics · WPI</span></div></aside></div></div></section>
+  </main>
+  <footer class="page-width"><a class="wordmark" href="#home" aria-label="Back to top">xc<span class="wordmark-dot">.</span></a><p>Xian Chen <span aria-hidden="true">/</span> A work in progress.</p><a href="https://github.com/Uijolfs" target="_blank" rel="noopener noreferrer">Find me on GitHub <span aria-hidden="true">↗</span></a></footer>
+</body>
+</html>
