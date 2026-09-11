@@ -58,3 +58,17 @@ footer .wordmark { font-size: 24px; }
   .wordmark { font-size: 25px; }
   .chaos-figure figcaption { gap: 10px; }
 }
+
+/* A single heartbeat flowing into the section divider. */
+.ecg-divider { display: flex; align-items: flex-start; width: 100%; height: 80px; color: var(--accent); opacity: .7; }
+.ecg-divider svg { display: block; width: 260px; height: 80px; flex: 0 0 260px; overflow: visible; }
+.ecg-divider path { stroke: currentColor; stroke-width: 1.25; stroke-linejoin: round; stroke-linecap: round; }
+.ecg-lead, .ecg-tail { display: block; height: 1.25px; margin-top: 47.375px; background: currentColor; }
+.ecg-lead { flex: 0 0 clamp(16px, 8vw, 160px); }
+.ecg-tail { flex: 1; min-width: 0; }
+.hero-bottom { border-bottom: 0; padding-top: 8px; }
+@media (max-width: 480px) {
+  .ecg-divider { height: 64px; }
+  .ecg-divider svg { width: 208px; height: 64px; flex-basis: 208px; }
+  .ecg-lead, .ecg-tail { height: 1px; margin-top: 37.9px; }
+}

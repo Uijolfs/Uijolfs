@@ -7,8 +7,8 @@
   <meta name="description" content="Uijolfs — Xian Chen’s personal website. Physical reasoning, mathematical models, and questions that matter in people’s lives.">
   <title>Uijolfs · Between the world and its models</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css?v=lorenz-1">
-  <script src="script.js?v=lorenz-1" defer></script>
+  <link rel="stylesheet" href="styles.css?v=divider-1">
+  <script src="script.js?v=divider-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -24,7 +24,7 @@
     <section class="hero" id="home" aria-labelledby="hero-title">
       <div class="hero-content page-width">
         <div class="hero-heading">
-          <h1 id="hero-title">Between the world<br>and its <em>models.</em></h1>
+          <h1 id="hero-title">Between the <em>world</em><br>and its <em>models.</em></h1>
         <div class="hero-intro">
           <p class="hero-description">I am interested in how physical reasoning and mathematical models help us understand complex systems—what they reveal, what they leave out, and where they stop being useful.</p>
           <p class="hero-description">What draws me to a problem also lies beyond the model itself: why it matters, and who might benefit from solving it. Clinical questions bring these interests together, connecting the search for understanding with the possibility of improving people's lives.</p>
@@ -33,12 +33,15 @@
         </div>
         <figure class="chaos-figure" aria-labelledby="chaos-caption">
           <div class="chaos-stage"><canvas id="lorenz" role="img" aria-label="A numerical trajectory of the Lorenz system, tracing the two wings of a chaotic attractor."></canvas></div>
-          <figcaption id="chaos-caption"><span class="chaos-name">LORENZ ATTRACTOR<span class="chaos-parameters">σ = 10 · ρ = 28 · β = 8/3</span></span><button id="chaos-toggle" class="motion-button" type="button" aria-pressed="false" aria-label="Pause animations">Pause motion</button></figcaption>
+          <figcaption id="chaos-caption"><span class="chaos-name">LORENZ ATTRACTOR<span class="chaos-parameters">σ = 10 · ρ = 28 · β = 8/3</span></span><button id="chaos-toggle" class="motion-button" type="button" aria-pressed="false" aria-label="Pause Lorenz animation">Pause motion</button></figcaption>
         </figure>
       </div>
-      <div class="signal-surface" aria-label="Decorative animated synthetic ECG waveform">
-        <canvas id="ecg" aria-hidden="true"></canvas>
-        <div class="signal-meta page-width"><span class="mono signal-label"><span class="signal-mark" aria-hidden="true">∿</span> ECG / ILLUSTRATIVE SIGNAL</span><button id="motion-toggle" class="motion-button" type="button" aria-pressed="false" aria-label="Pause animations"><span id="motion-symbol" aria-hidden="true">Ⅱ</span><span id="motion-label">Pause motion</span></button></div>
+      <div class="ecg-divider" aria-hidden="true">
+        <span class="ecg-lead"></span>
+        <svg viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M0 48 H24 C32 48 34 40 42 40 S52 48 62 48 H79 L87 56 L95 8 L104 70 L115 48 H136 C151 48 157 29 174 29 S197 48 216 48 H260" />
+        </svg>
+        <span class="ecg-tail"></span>
       </div>
       <div class="hero-bottom page-width"><a class="scroll-link" href="#about">About me <span aria-hidden="true">↓</span></a></div>
     </section>
