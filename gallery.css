@@ -60,3 +60,19 @@ html.gallery-modal-open { overflow: hidden; }
   .album-preview img, .photo-link img, .lightbox-stage img { transition: none; }
   .album-preview a:hover img, .photo-link:hover img { transform: none; }
 }
+
+/* Match the refined typography and spacing of the main site. */
+.gallery-page .gallery-header { height: var(--header-height); min-height: var(--header-height); }
+.gallery-back { font-size: 1rem; }
+.gallery-main { width: min(var(--content-max), calc(100% - 2 * var(--page-edge))); padding-block: clamp(54px, 6vw, 92px) 96px; }
+.gallery-intro { margin-bottom: clamp(38px, 5vw, 64px); }
+.gallery-intro h1 { font-family: var(--display); font-size: clamp(3.8rem, 7vw, 7.3rem); }
+.gallery-intro .eyebrow, .gallery-count, .photo-item figcaption { font-size: .92rem; }
+.photo-grid { column-gap: clamp(18px, 2vw, 30px); }
+.photo-item { margin-bottom: 34px; }
+.photo-link { border-radius: 12px; border: 1px solid rgba(124,145,177,.18); box-shadow: 0 16px 38px rgba(0,0,0,.12); }
+@media (max-width: 760px) {
+  .gallery-page .gallery-header { height: 78px; min-height: 78px; }
+  .gallery-main { width: calc(100% - 2 * var(--page-edge)); }
+  .gallery-intro h1 { font-size: clamp(3rem, 15vw, 4.8rem); }
+}

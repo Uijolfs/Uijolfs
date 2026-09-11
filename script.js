@@ -279,7 +279,7 @@
   const pages = [...document.querySelectorAll('main > section')];
   const footer = document.querySelector('footer');
   if (!pages.length || !footer) return;
-  const threshold = 460;
+  const threshold = () => Math.max(320, Math.min(390, window.innerHeight * .42));
   let frame = 0, releaseTimer = 0, lastFrame = 0;
   let position = 0, velocity = 0, targetPosition = 0;
   let origin = 0, destination = null, budget = 0;
@@ -347,11 +347,11 @@
     if (mode === 'preview') {
       // Follow input within a frame; resistance belongs in the displacement curve,
       // not in a second slow spring between the gesture and its visible response.
-      next = position + (targetPosition - position) * (1 - Math.exp(-dt / .018));
+      next = position + (targetPosition - position) * (1 - Math.exp(-dt / .024));
       velocity = Math.max(-1800, Math.min(1800, (next - position) / dt));
     } else {
       // Exact critically damped spring, independent of 60/120 Hz frame timing.
-      const omega = mode === 'return' ? 18 : 15;
+      const omega = mode === 'return' ? 17 : 13.5;
       const displacement = position - targetPosition;
       const momentum = velocity + omega * displacement;
       const decay = Math.exp(-omega * dt);
@@ -384,7 +384,7 @@
   }
   function pull(delta) {
     clearTimeout(releaseTimer);
-    budget += Math.max(-100, Math.min(100, delta));
+    budget += Math.max(-110, Math.min(110, delta));
     const direction = Math.sign(budget);
     destination = nextStop(direction || Math.sign(delta));
     if (!destination) {
@@ -398,7 +398,7 @@
       preview = destination.element;
       preview.classList.add('spring-preview');
     }
-    if (Math.abs(budget) >= threshold) {
+    if (Math.abs(budget) >= threshold()) {
       mode = 'commit';
       targetPosition = destination.position;
       locked = true;
@@ -407,8 +407,8 @@
       mode = 'preview';
       const span = destination.position - origin;
       // Resistance rises with displacement; a light gesture still exposes the next page.
-      targetPosition = origin + span * .38 * (1 - Math.exp(-Math.abs(budget) / 190));
-      releaseTimer = setTimeout(returnToOrigin, 280);
+      targetPosition = origin + span * .42 * (1 - Math.exp(-Math.abs(budget) / 155));
+      releaseTimer = setTimeout(returnToOrigin, 340);
     }
     ensureFrame();
   }
