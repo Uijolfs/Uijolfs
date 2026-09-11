@@ -172,10 +172,10 @@
 })();
 
 
-// One-time, viewport-driven entrances; content stays visible without animation support.
+// Repeat subtle entrance and departure motion as content crosses the viewport.
 (() => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (reduced.matches || !('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window)) return;
   const groups = [
     '.hero-heading h1, .hero-intro, .chaos-figure',
     '.about-sidebar, .about-section .section-body',
@@ -185,57 +185,82 @@
     '.personal-section .section-marker, .personal-content',
     'footer.page-width'
   ];
-  const pending = new Map();
-  const running = new Map();
-  groups.forEach((selector, groupIndex) => {
+  const records = new Map();
+  let observer = null;
+  groups.forEach(selector => {
     document.querySelectorAll(selector).forEach((element, index) => {
       if (typeof element.animate === 'function') {
-        pending.set(element, { delay: Math.min(index * 70, 210), distance: groupIndex === 0 ? 10 : 16 });
+        records.set(element, { visible: null, animation: null, delay: Math.min(index * 65, 130) });
       }
     });
   });
-  const observer = new IntersectionObserver(entries => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting || !pending.has(entry.target)) continue;
-      const element = entry.target;
-      const settings = pending.get(element);
-      pending.delete(element);
-      observer.unobserve(element);
-      if (reduced.matches || document.hidden || element.contains(document.activeElement)) continue;
-      const animation = element.animate(
-        [{ opacity: 0, transform: 'translateY(' + settings.distance + 'px)' }, { opacity: 1, transform: 'translateY(0)' }],
-        { duration: 620, delay: settings.delay, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' }
-      );
-      running.set(element, animation);
-      animation.onfinish = animation.oncancel = () => running.delete(element);
-    }
-  }, { threshold: .08, rootMargin: '0px 0px -4% 0px' });
-  function cancelRunning() {
-    for (const animation of [...running.values()]) animation.cancel();
-    running.clear();
+  function cancel(record) {
+    if (!record.animation) return;
+    record.animation.onfinish = record.animation.oncancel = null;
+    record.animation.cancel();
+    record.animation = null;
   }
-  reduced.addEventListener('change', () => {
-    if (!reduced.matches) return;
-    observer.disconnect();
-    pending.clear();
-    cancelRunning();
-  });
+  function reset() {
+    observer?.disconnect();
+    observer = null;
+    records.forEach(record => { cancel(record); record.visible = null; });
+  }
+  function start() {
+    reset();
+    if (reduced.matches) return;
+    observer = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        const element = entry.target;
+        const record = records.get(element);
+        if (!record) continue;
+        // Different entry and exit thresholds avoid flicker at a boundary.
+        const visible = entry.isIntersecting && entry.intersectionRatio >= (record.visible === true ? .07 : .18);
+        if (visible === record.visible) continue;
+        const previous = record.visible;
+        record.visible = visible;
+        if (reduced.matches || document.hidden || element.contains(document.activeElement)) {
+          cancel(record);
+          continue;
+        }
+        // Do not animate unseen content when the observer first initializes.
+        if (!visible && previous === null) continue;
+        const current = getComputedStyle(element);
+        const direction = entry.boundingClientRect.top < 0 ? -1 : 1;
+        const from = record.animation
+          ? { opacity: current.opacity, transform: current.transform }
+          : visible
+            ? { opacity: .22, transform: 'translateY(' + direction * 24 + 'px)' }
+            : { opacity: 1, transform: 'translateY(0)' };
+        cancel(record);
+        const animation = element.animate(
+          [from, visible
+            ? { opacity: 1, transform: 'translateY(0)' }
+            : { opacity: .28, transform: 'translateY(' + direction * 18 + 'px)' }],
+          { duration: visible ? 620 : 340, delay: visible ? record.delay : 0, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' }
+        );
+        record.animation = animation;
+        if (visible) animation.onfinish = () => {
+          if (record.animation === animation) {
+            animation.onfinish = null;
+            animation.cancel();
+            record.animation = null;
+          }
+        };
+      }
+    }, { threshold: [0, .06, .08, .17, .19, .3], rootMargin: '-3% 0px -5% 0px' });
+    records.forEach((record, element) => observer.observe(element));
+  }
+  reduced.addEventListener('change', start);
   document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancelRunning();
+    if (document.hidden) records.forEach(cancel);
   });
   document.addEventListener('focusin', event => {
-    for (const element of pending.keys()) {
+    records.forEach((record, element) => {
       if (element.contains(event.target)) {
-        observer.unobserve(element);
-        pending.delete(element);
+        cancel(record);
+        record.visible = true;
       }
-    }
-    for (const [element, animation] of running) {
-      if (element.contains(event.target)) {
-        animation.cancel();
-        running.delete(element);
-      }
-    }
+    });
   });
-  pending.forEach((settings, element) => observer.observe(element));
+  start();
 })();

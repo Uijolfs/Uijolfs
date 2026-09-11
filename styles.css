@@ -224,3 +224,32 @@ footer.page-width { border-top: 1px solid var(--line); padding-block: 36px; }
   html { scroll-behavior: auto; }
   .github-link > span, .text-link > span, .scroll-link > span, .about-github-arrow, footer > a:last-child > span, .research-back-button span { transform: none !important; }
 }
+
+/* Page-like sections, with gentle native scroll settling. */
+:root { --page-height: calc(100svh - var(--header-height, 90px) - 24px); }
+html { scroll-snap-type: y proximity; }
+main > section { min-height: var(--page-height); scroll-snap-align: start; scroll-snap-stop: normal; }
+.about-section, .personal-section > .section-grid { align-content: center; }
+.personal-section > .section-grid { min-height: var(--page-height); }
+.learning-section { display: grid; align-content: center; }
+.research-layout { min-height: var(--page-height); align-content: center; }
+.about-section, .learning-section { position: relative; }
+.about-section::after, .learning-section::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(119,175,255,.5), var(--line) 28%, transparent);
+}
+.research-section { background: linear-gradient(180deg, #151b24 0%, #10141b 100%); border-top-color: #354357; border-bottom-color: #354357; }
+.personal-section { background: #121821; border-top-color: #354357; }
+.section-marker { position: relative; }
+.section-number { color: #8cbbff; }
+.research-card { box-shadow: 0 12px 32px rgba(0,0,0,.14); }
+@supports not (height: 100svh) {
+  :root { --page-height: calc(100vh - var(--header-height, 90px) - 24px); }
+}
+@media (max-width: 760px) {
+  html { scroll-snap-type: y proximity; }
+  .research-layout { align-content: start; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-snap-type: none; scroll-behavior: auto; }
+}
