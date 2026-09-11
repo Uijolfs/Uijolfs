@@ -253,3 +253,23 @@ main > section { min-height: var(--page-height); scroll-snap-align: start; scrol
 @media (prefers-reduced-motion: reduce) {
   html { scroll-snap-type: none; scroll-behavior: auto; }
 }
+
+/* Equal viewport-sized pages; long content scrolls within its own page. */
+:root { --page-height: calc(100svh - var(--header-height, 90px)); }
+html { scroll-snap-type: none; scroll-padding-top: var(--header-height, 90px); }
+main > section {
+  height: var(--page-height); min-height: 0; overflow-y: auto; overflow-x: hidden;
+  scroll-snap-align: none; scroll-snap-stop: normal;
+  scrollbar-width: thin; scrollbar-color: #3d4b60 transparent;
+}
+html.wheel-paging main > section { overscroll-behavior-y: contain; }
+html.is-page-scrolling { scroll-behavior: auto !important; }
+.about-section, .learning-section { align-content: safe center; }
+.research-layout, .personal-section > .section-grid { min-height: 100%; align-content: safe center; }
+footer.page-width { min-height: 160px; scroll-snap-align: none; }
+@supports not (height: 100svh) {
+  :root { --page-height: calc(100vh - var(--header-height, 90px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; scroll-snap-type: none; }
+}

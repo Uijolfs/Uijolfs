@@ -264,3 +264,103 @@
   });
   start();
 })();
+
+
+// Deliberate wheel paging: read overflowing content first, then accumulate a new turn.
+(() => {
+  const desktop = window.matchMedia('(min-width: 851px) and (hover: hover) and (pointer: fine)');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const root = document.documentElement;
+  const pages = [...document.querySelectorAll('main > section')];
+  const footer = document.querySelector('footer');
+  if (!pages.length || !footer) return;
+  const threshold = 360;
+  const duration = 760;
+  const gestureGap = 200;
+  let budget = 0, lastInput = -Infinity, lockedUntil = 0, locked = false, frame = 0;
+
+  function enabled() { return desktop.matches && !reduced.matches; }
+  function cancel() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0; budget = 0; locked = false; lockedUntil = 0;
+    root.classList.remove('is-page-scrolling');
+  }
+  function configure() {
+    cancel();
+    root.classList.toggle('wheel-paging', enabled());
+  }
+  function stops() {
+    const header = document.querySelector('.site-header');
+    const offset = header?.offsetHeight || 90;
+    const maximum = Math.max(0, root.scrollHeight - window.innerHeight);
+    const points = [...pages, footer].map(element =>
+      Math.max(0, Math.min(maximum, element.getBoundingClientRect().top + window.scrollY - offset))
+    );
+    // The final stop is the actual document bottom, even when the footer is short.
+    points.push(maximum);
+    return [...new Set(points)].sort((a, b) => a - b).filter((value, index, values) => index === 0 || value - values[index - 1] > 2);
+  }
+  function canScrollInside(target, direction) {
+    for (let element = target; element && element !== document.body && element !== root; element = element.parentElement) {
+      const style = getComputedStyle(element);
+      if (!/(auto|scroll)/.test(style.overflowY) || element.scrollHeight <= element.clientHeight + 2) continue;
+      if (direction > 0 && element.scrollTop < element.scrollHeight - element.clientHeight - 2) return true;
+      if (direction < 0 && element.scrollTop > 2) return true;
+    }
+    return false;
+  }
+  function goTo(destination, now) {
+    const origin = window.scrollY;
+    budget = 0; locked = true; lockedUntil = now + duration + 100;
+    root.classList.add('is-page-scrolling');
+    const started = performance.now();
+    function tick(time) {
+      const progress = Math.min(1, Math.max(0, (time - started) / duration));
+      const ease = progress * progress * (3 - 2 * progress);
+      window.scrollTo(0, origin + (destination - origin) * ease);
+      if (progress < 1) frame = requestAnimationFrame(tick);
+      else {
+        window.scrollTo(0, destination);
+        frame = 0;
+        root.classList.remove('is-page-scrolling');
+      }
+    }
+    frame = requestAnimationFrame(tick);
+  }
+  window.addEventListener('wheel', event => {
+    if (!enabled() || event.defaultPrevented || !event.cancelable || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+    if (Math.abs(event.deltaX) > Math.abs(event.deltaY) || !event.deltaY) return;
+    const target = event.target instanceof Element ? event.target : document.body;
+    if (target.closest('input, textarea, select, [contenteditable], [role="dialog"]')) return;
+    root.classList.add('wheel-paging');
+    const now = performance.now();
+    const idle = now - lastInput;
+    lastInput = now;
+    if (locked) {
+      if (now < lockedUntil || idle < gestureGap) { event.preventDefault(); return; }
+      locked = false;
+    }
+    const delta = event.deltaY * (event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? window.innerHeight : 1);
+    const direction = Math.sign(delta);
+    if (canScrollInside(target, direction)) { budget = 0; return; }
+    const points = stops();
+    const destination = direction > 0
+      ? points.find(point => point > window.scrollY + 2)
+      : [...points].reverse().find(point => point < window.scrollY - 2);
+    if (destination === undefined) { budget = 0; return; }
+    event.preventDefault();
+    if (idle > 450 || Math.sign(budget) !== direction) budget = 0;
+    // Limit a single unusually large wheel event so one tick cannot skip a page.
+    budget += Math.max(-120, Math.min(120, delta));
+    if (Math.abs(budget) >= threshold) goTo(destination, now);
+  }, { passive: false });
+  window.addEventListener('resize', configure, { passive: true });
+  window.addEventListener('keydown', cancel);
+  window.addEventListener('pointerdown', cancel, { passive: true });
+  window.addEventListener('touchstart', () => { cancel(); root.classList.remove('wheel-paging'); }, { passive: true });
+  window.addEventListener('hashchange', cancel);
+  window.addEventListener('pagehide', cancel);
+  desktop.addEventListener('change', configure);
+  reduced.addEventListener('change', configure);
+  configure();
+})();
