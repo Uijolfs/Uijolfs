@@ -122,45 +122,34 @@
 })();
 
 
-// Animate native research disclosures; keep them usable without JavaScript.
+// Swap the cover and project content without changing the card's footprint.
 (() => {
-  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  document.querySelectorAll('details.research-card').forEach(card => {
-    const summary = card.querySelector('summary');
-    const content = card.querySelector('.research-card-projects');
-    let animation = null;
-    let expanded = card.open;
-    function finish() {
-      if (animation) {
-        animation.onfinish = null;
-        animation.cancel();
-        animation = null;
-      }
-      card.open = expanded;
-      card.style.height = '';
+  document.querySelectorAll('.research-card').forEach(card => {
+    const front = card.querySelector('.research-front');
+    const back = card.querySelector('.research-back');
+    const open = card.querySelector('.research-open');
+    const close = card.querySelector('.research-back-button');
+    if (!front || !back || !open || !close) return;
+    function setActive(active, moveFocus = true) {
+      card.classList.toggle('is-active', active);
+      front.inert = active;
+      back.inert = !active;
+      front.setAttribute('aria-hidden', String(active));
+      back.setAttribute('aria-hidden', String(!active));
+      open.setAttribute('aria-expanded', String(active));
+      if (moveFocus) (active ? close : open).focus({ preventScroll: true });
     }
-    summary.addEventListener('click', event => {
-      event.preventDefault();
-      const startHeight = card.getBoundingClientRect().height;
-      expanded = !expanded;
-      if (animation) {
-        animation.onfinish = null;
-        animation.cancel();
-        animation = null;
+    open.disabled = false;
+    close.hidden = false;
+    card.classList.add('is-ready');
+    setActive(false, false);
+    open.addEventListener('click', () => setActive(true));
+    close.addEventListener('click', () => setActive(false));
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && card.classList.contains('is-active')) {
+        event.preventDefault();
+        setActive(false);
       }
-      if (reduced.matches || !card.animate) { finish(); return; }
-      card.style.height = startHeight + 'px';
-      card.open = true;
-      const computed = getComputedStyle(card);
-      const border = parseFloat(computed.borderTopWidth) + parseFloat(computed.borderBottomWidth);
-      const targetHeight = summary.offsetHeight + (expanded ? content.offsetHeight : 0) + border;
-      animation = card.animate(
-        { height: [startHeight + 'px', targetHeight + 'px'] },
-        { duration: 320, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'forwards' }
-      );
-      animation.onfinish = finish;
     });
-    window.addEventListener('resize', finish, { passive: true });
-    reduced.addEventListener('change', finish);
   });
 })();
