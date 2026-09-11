@@ -409,3 +409,52 @@ main > section.spring-preview, footer.spring-preview {
   .learning-column { transform: none !important; }
   main > section.spring-preview, footer.spring-preview { opacity: 1; transform: none; }
 }
+
+/* First-page height budget: content, one ECG divider, then the About link.
+   Reserve the caption independently of the canvas; do not crop the whole hero. */
+@media (min-width: 851px) {
+  #home {
+    display: grid;
+    grid-template-rows: minmax(min-content, 1fr) 52px 48px;
+    padding-block: clamp(20px, 3vh, 36px) 12px;
+    row-gap: 0;
+  }
+  #home .hero-content {
+    padding-block: 0 16px;
+    align-items: start;
+    gap: clamp(36px, 5vw, 88px);
+  }
+  #home .hero-heading h1 {
+    font-size: clamp(3rem, min(5.4vw, 8vh), 5.8rem);
+    line-height: 1.06;
+  }
+  #home .hero-intro { padding-top: 24px; }
+  #home .chaos-stage {
+    aspect-ratio: auto;
+    height: min(560px, max(180px, calc(var(--page-height) - 260px)));
+  }
+  #home .chaos-figure figcaption {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    padding-top: 12px;
+  }
+  #home .chaos-name { line-height: 1.5; }
+  #home .chaos-parameters { white-space: nowrap; }
+  #home .ecg-divider { height: 52px; align-self: end; }
+  #home .ecg-divider svg { width: 169px; height: 52px; flex-basis: 169px; }
+  #home .ecg-lead, #home .ecg-tail { margin-top: 30.794px; height: 1px; }
+  #home .hero-bottom { padding-block: 0; align-self: center; }
+}
+@media (min-width: 851px) and (max-height: 740px) {
+  #home .hero-heading h1 { font-size: clamp(2.75rem, 7.4vh, 3.5rem); }
+  #home .hero-intro { padding-top: 18px; }
+  #home .hero-description { font-size: 1rem; line-height: 1.65; }
+  #home .hero-description + .hero-description { margin-top: 12px; }
+  #home .hero-intro .text-link { margin-top: 14px; }
+}
+@media (max-width: 850px) {
+  #home .hero-content { padding-block: 24px 24px; }
+  #home .chaos-stage { aspect-ratio: auto; height: clamp(240px, 65vw, 420px); }
+  #home .chaos-figure figcaption { flex-wrap: wrap; }
+}
