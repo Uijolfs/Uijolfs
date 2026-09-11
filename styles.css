@@ -10,26 +10,51 @@
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}html.motion-paused{scroll-behavior:auto}html.motion-paused *,html.motion-paused *::after{transition:none!important}
 
 
-/* Personal identity and philosophy-led introduction. */
+/* Personal identity and the opening essay. */
 .wordmark { font-size: 28px; font-weight: 600; letter-spacing: -1px; }
 .hero { padding-top: 0; }
-.hero-content { grid-template-columns: 1.15fr 1fr; align-items: start; gap: 64px; padding-top: 76px; padding-bottom: 40px; }
+.hero-content {
+  width: min(1440px, calc(100% - 112px));
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: center; gap: clamp(36px, 5vw, 88px);
+  padding-top: clamp(48px, 6vw, 88px); padding-bottom: 64px;
+}
 .hero-heading { min-width: 0; }
-.hero-heading h1 { margin: 0; font-size: clamp(2.5rem, 4.6vw, 4.6rem); font-weight: 450; letter-spacing: -.05em; line-height: 1.13; }
-.hero-heading h1 em { font-family: Georgia, "Times New Roman", serif; font-weight: 400; color: var(--accent); }
-.hero-intro { max-width: 490px; padding-top: 0; }
-.hero-intro .hero-description { max-width: none; margin-top: 0; }
-.hero-intro .hero-description + .hero-description { margin-top: 20px; }
+.hero-heading h1 {
+  font-family: Baskerville, "Baskerville Old Face", "Palatino Linotype", Georgia, serif;
+  font-size: clamp(3.25rem, 5.4vw, 5.4rem); font-weight: 400;
+  letter-spacing: -.045em; line-height: 1.08; text-wrap: balance;
+}
+.hero-heading h1 em { font-family: inherit; font-weight: 400; color: var(--accent); }
+.hero-intro { max-width: 570px; padding-top: 30px; }
+.hero-intro .hero-description { max-width: none; margin: 0; font-size: 16px; line-height: 1.8; }
+.hero-intro .hero-description + .hero-description { margin-top: 18px; }
+.hero-intro .text-link { margin-top: 26px; }
+.chaos-figure { margin: 0; min-width: 0; }
+.chaos-stage { width: 100%; aspect-ratio: 1 / 1; position: relative; }
+#lorenz { width: 100%; height: 100%; }
+.chaos-figure figcaption { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--line); padding-top: 18px; }
+.chaos-name { font-family: var(--mono); font-size: 12px; letter-spacing: .1em; color: var(--muted); }
+.chaos-parameters { display: block; margin-top: 5px; color: var(--dim); font-size: 12px; letter-spacing: 0; }
+.chaos-figure .motion-button { font-size: 12px; min-height: 44px; white-space: nowrap; }
 .hero-bottom { justify-content: flex-end; }
 .personal-content { grid-template-columns: 1fr; }
 .personal-content > div { max-width: 650px; }
 footer .wordmark { font-size: 24px; }
 @media (max-width: 1100px) {
-  .hero-content { gap: 36px; }
+  .hero-content { width: calc(100% - 72px); gap: 36px; }
+  .hero-heading h1 { font-size: clamp(3rem, 5.4vw, 4.4rem); }
+}
+@media (max-width: 850px) {
+  .hero-content { grid-template-columns: 1fr; gap: 24px; }
+  .hero-heading h1 { font-size: clamp(3rem, 7.7vw, 4.8rem); }
+  .hero-intro { max-width: 620px; }
+  .chaos-figure { width: min(100%, 540px); justify-self: center; }
 }
 @media (max-width: 760px) {
-  .hero-content { grid-template-columns: 1fr; padding-top: 42px; padding-bottom: 25px; gap: 26px; }
-  .hero-heading h1 { font-size: clamp(2.4rem, 8.7vw, 3.5rem); }
-  .hero-intro { max-width: 100%; }
+  .hero-content { width: calc(100% - 40px); padding-top: 42px; padding-bottom: 36px; }
+  .hero-heading h1 { font-size: clamp(2.5rem, 8.5vw, 4rem); }
+  .hero-intro { padding-top: 24px; }
   .wordmark { font-size: 25px; }
+  .chaos-figure figcaption { gap: 10px; }
 }

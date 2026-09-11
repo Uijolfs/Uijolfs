@@ -7,8 +7,8 @@
   <meta name="description" content="Uijolfs — Xian Chen’s personal website. Physical reasoning, mathematical models, and questions that matter in people’s lives.">
   <title>Uijolfs · Between the world and its models</title>
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="styles.css">
-  <script src="script.js" defer></script>
+  <link rel="stylesheet" href="styles.css?v=lorenz-1">
+  <script src="script.js?v=lorenz-1" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -25,12 +25,16 @@
       <div class="hero-content page-width">
         <div class="hero-heading">
           <h1 id="hero-title">Between the world<br>and its <em>models.</em></h1>
-        </div>
         <div class="hero-intro">
           <p class="hero-description">I am interested in how physical reasoning and mathematical models help us understand complex systems—what they reveal, what they leave out, and where they stop being useful.</p>
           <p class="hero-description">What draws me to a problem also lies beyond the model itself: why it matters, and who might benefit from solving it. Clinical questions bring these interests together, connecting the search for understanding with the possibility of improving people's lives.</p>
           <a class="text-link" href="#research">Explore my work <span aria-hidden="true">↘</span></a>
         </div>
+        </div>
+        <figure class="chaos-figure" aria-labelledby="chaos-caption">
+          <div class="chaos-stage"><canvas id="lorenz" role="img" aria-label="A numerical trajectory of the Lorenz system, tracing the two wings of a chaotic attractor."></canvas></div>
+          <figcaption id="chaos-caption"><span class="chaos-name">LORENZ ATTRACTOR<span class="chaos-parameters">σ = 10 · ρ = 28 · β = 8/3</span></span><button id="chaos-toggle" class="motion-button" type="button" aria-pressed="false" aria-label="Pause animations">Pause motion</button></figcaption>
+        </figure>
       </div>
       <div class="signal-surface" aria-label="Decorative animated synthetic ECG waveform">
         <canvas id="ecg" aria-hidden="true"></canvas>
@@ -72,3 +76,4 @@
   <footer class="page-width"><a class="wordmark" href="#home" aria-label="Back to top">Uijolfs<span class="wordmark-dot">.</span></a><p>Xian Chen</p><a href="https://github.com/Uijolfs" target="_blank" rel="noopener noreferrer">Find me on GitHub <span aria-hidden="true">↗</span></a></footer>
 </body>
 </html>
+
