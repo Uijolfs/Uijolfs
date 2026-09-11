@@ -168,3 +168,59 @@ footer .wordmark { font-size: 24px; }
   .learning-grid { grid-template-columns: 1fr; gap: 30px; margin-top: 30px; }
   .learning-column h4 br { display: none; }
 }
+
+/* Shared rhythm and subtle interaction feedback. */
+:root { --ease-out: cubic-bezier(.22, 1, .36, 1); --section-space: clamp(64px, 7.5vw, 104px); }
+html { scroll-padding-top: calc(var(--header-height, 90px) + 24px); }
+.site-header { transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease; }
+.site-header.is-scrolled { background: rgba(12,14,18,.98); border-color: #354151; box-shadow: 0 8px 28px rgba(0,0,0,.12); }
+nav a { min-height: 44px; display: inline-flex; align-items: center; transition: color .2s ease; }
+nav a::after { height: 2px; border-radius: 2px; transition: transform .3s var(--ease-out); }
+nav a:focus-visible::after { transform: scaleX(1); }
+.wordmark { transition: color .2s ease; }
+.wordmark:hover, .wordmark:focus-visible { color: var(--accent); }
+.wordmark-dot { display: inline-block; }
+.hero-heading h1 { text-wrap: balance; }
+.hero-intro .hero-description { font-size: clamp(1rem, 1.15vw, 1.0625rem); line-height: 1.85; }
+.hero-content { padding-bottom: clamp(40px, 5vw, 72px); }
+.section-grid, .research-layout, .learning-section { padding-block: var(--section-space); }
+.section-marker h2, .section-number { font-size: .875rem; }
+.section-headline { line-height: 1.18; text-wrap: balance; }
+.about-copy p, .section-intro > p, .personal-content p:not(.eyebrow) { max-width: 68ch; }
+.interest-strip { gap: 12px 24px; }
+.interest-strip span { font-size: .875rem; line-height: 1.6; color: #c9d5e7; }
+.about-avatar { transition: border-color .25s ease, box-shadow .3s ease; }
+.about-github:hover .about-avatar, .about-github:focus-visible .about-avatar { box-shadow: 0 0 0 5px rgba(119,175,255,.08); }
+.about-github-handle, .about-github-arrow, .github-link, .text-link, .scroll-link, footer a { transition: color .2s ease, border-color .2s ease; }
+.github-link, .text-link, .scroll-link, footer > a:last-child { min-height: 44px; align-items: center; }
+.github-link, footer > a:last-child { display: inline-flex; }
+.github-link > span, .text-link > span, .scroll-link > span, .about-github-arrow, footer > a:last-child > span { display: inline-block; transition: transform .25s var(--ease-out); }
+.text-link:hover > span, .text-link:focus-visible > span { transform: translate(3px, 3px); }
+.github-link:hover > span, .github-link:focus-visible > span, footer > a:last-child:hover > span { transform: translate(3px, -3px); }
+.scroll-link:hover > span, .scroll-link:focus-visible > span { transform: translateY(3px); }
+.about-github:hover .about-github-arrow { transform: translate(2px, -2px); }
+.motion-button { border-radius: 7px; min-height: 44px; transition: background-color .2s ease, border-color .2s ease; }
+.motion-button:hover { background: var(--surface); border-color: var(--accent); }
+.chaos-name, .chaos-parameters, .chaos-figure .motion-button { font-size: .875rem; }
+.research-card:focus-within { border-color: var(--accent); }
+.research-back-button { transition: color .2s ease; }
+.research-back-button span { display: inline-block; transition: transform .25s var(--ease-out); }
+.research-back-button:hover span { transform: translateX(-3px); }
+.learning-column { transition: border-color .25s ease; }
+.learning-repository { transition: color .2s ease; }
+.personal-content > div { max-width: 720px; }
+footer.page-width { border-top: 1px solid var(--line); padding-block: 36px; }
+@media (max-width: 760px) {
+  :root { --section-space: 58px; }
+  .site-header { gap: 6px 20px; padding-block: 12px 8px; }
+  nav { justify-content: space-between; gap: 16px; }
+  nav a { padding-block: 8px; }
+  nav a::after { bottom: 3px; }
+  .interest-strip { gap: 12px 20px; }
+  .chaos-figure figcaption { flex-wrap: wrap; }
+  footer.page-width { padding-block: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .github-link > span, .text-link > span, .scroll-link > span, .about-github-arrow, footer > a:last-child > span, .research-back-button span { transform: none !important; }
+}

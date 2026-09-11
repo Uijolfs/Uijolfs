@@ -1,19 +1,36 @@
-// Update the active navigation link as the reader moves through the sections.
+// Keep navigation and sticky-header styling aligned with the reading position.
 (() => {
-  if (!('IntersectionObserver' in window)) return;
-    const links = [...document.querySelectorAll('nav a')];
-    // Observe each section with a shared navigation observer.
-    const observer = new IntersectionObserver(entries => {
-      const activeEntry = entries.find(entry => entry.isIntersecting);
-      if (!activeEntry) return;
-      for (const link of links) {
-        const active = link.hash === '#' + activeEntry.target.id;
-        link.classList.toggle('active', active);
-        if (active) link.setAttribute('aria-current', 'location'); else link.removeAttribute('aria-current');
-      }
-    }, {rootMargin:'-15% 0px -55% 0px',threshold:0});
-    document.querySelectorAll('main section[id]:not(#home)').forEach(section => observer.observe(section));
-
+  const header = document.querySelector('.site-header');
+  const links = [...document.querySelectorAll('nav a')];
+  const sections = links.map(link => document.getElementById(link.hash.slice(1)));
+  let frame = 0;
+  function update() {
+    frame = 0;
+    const height = header?.offsetHeight || 90;
+    document.documentElement.style.setProperty('--header-height', height + 'px');
+    header?.classList.toggle('is-scrolled', window.scrollY > 12);
+    const readingLine = height + Math.min(window.innerHeight * .2, 160);
+    let active = -1;
+    sections.forEach((section, index) => {
+      if (section && section.getBoundingClientRect().top <= readingLine) active = index;
+    });
+    if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) active = links.length - 1;
+    links.forEach((link, index) => {
+      const selected = index === active;
+      link.classList.toggle('active', selected);
+      if (selected) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  }
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  window.addEventListener('hashchange', schedule);
+  window.addEventListener('pageshow', schedule);
+  if (header && 'ResizeObserver' in window) new ResizeObserver(schedule).observe(header);
+  schedule();
 })();
 
 // Lorenz's equations, integrated with fourth-order Runge–Kutta.
@@ -155,37 +172,70 @@
 })();
 
 
-// Reveal Learning once, on its first entry into the viewport.
+// One-time, viewport-driven entrances; content stays visible without animation support.
 (() => {
-  const section = document.getElementById('notes');
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (!section || reduced.matches || !('IntersectionObserver' in window)) return;
-  const columns = [...section.querySelectorAll('.learning-column')];
-  if (!columns.length || !columns.every(column => typeof column.animate === 'function')) return;
-  let played = false;
-  const animations = [];
-  const observer = new IntersectionObserver(entries => {
-    if (played || !entries.some(entry => entry.isIntersecting)) return;
-    played = true;
-    observer.disconnect();
-    if (reduced.matches) return;
-    columns.forEach((column, index) => {
-      animations.push(column.animate(
-        [{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'translateY(0)' }],
-        { duration: 560, delay: index * 90, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' }
-      ));
+  if (reduced.matches || !('IntersectionObserver' in window)) return;
+  const groups = [
+    '.hero-heading h1, .hero-intro, .chaos-figure',
+    '.about-sidebar, .about-section .section-body',
+    '.research-layout > .section-marker, .research-layout > .section-intro',
+    '.research-grid > .research-card',
+    '.learning-header, .learning-grid > .learning-column',
+    '.personal-section .section-marker, .personal-content',
+    'footer.page-width'
+  ];
+  const pending = new Map();
+  const running = new Map();
+  groups.forEach((selector, groupIndex) => {
+    document.querySelectorAll(selector).forEach((element, index) => {
+      if (typeof element.animate === 'function') {
+        pending.set(element, { delay: Math.min(index * 70, 210), distance: groupIndex === 0 ? 10 : 16 });
+      }
     });
-  }, { threshold: .08, rootMargin: '0px 0px -8% 0px' });
-  const cancel = () => {
+  });
+  const observer = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting || !pending.has(entry.target)) continue;
+      const element = entry.target;
+      const settings = pending.get(element);
+      pending.delete(element);
+      observer.unobserve(element);
+      if (reduced.matches || document.hidden || element.contains(document.activeElement)) continue;
+      const animation = element.animate(
+        [{ opacity: 0, transform: 'translateY(' + settings.distance + 'px)' }, { opacity: 1, transform: 'translateY(0)' }],
+        { duration: 620, delay: settings.delay, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'backwards' }
+      );
+      running.set(element, animation);
+      animation.onfinish = animation.oncancel = () => running.delete(element);
+    }
+  }, { threshold: .08, rootMargin: '0px 0px -4% 0px' });
+  function cancelRunning() {
+    for (const animation of [...running.values()]) animation.cancel();
+    running.clear();
+  }
+  reduced.addEventListener('change', () => {
     if (!reduced.matches) return;
     observer.disconnect();
-    animations.forEach(animation => animation.cancel());
-  };
-  reduced.addEventListener('change', cancel);
-  section.addEventListener('focusin', () => {
-    played = true;
-    observer.disconnect();
-    animations.forEach(animation => animation.cancel());
+    pending.clear();
+    cancelRunning();
   });
-  observer.observe(section);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelRunning();
+  });
+  document.addEventListener('focusin', event => {
+    for (const element of pending.keys()) {
+      if (element.contains(event.target)) {
+        observer.unobserve(element);
+        pending.delete(element);
+      }
+    }
+    for (const [element, animation] of running) {
+      if (element.contains(event.target)) {
+        animation.cancel();
+        running.delete(element);
+      }
+    }
+  });
+  pending.forEach((settings, element) => observer.observe(element));
 })();
