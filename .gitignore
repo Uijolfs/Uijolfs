@@ -1,0 +1,6 @@
+# Local system and editor files
+.DS_Store
+._*
+*.swp
+*.swo
+*~
